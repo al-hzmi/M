@@ -1,419 +1,70 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مراجعة أحياء</title>
-  <meta name="description" content="مراجعة لأهم أسئلة الأحياء، 71 سؤال من ملف التحصيلي لمساعدتك في الاستعداد للاختبار.">
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-        --bg-gradient: linear-gradient(to right, #dfe9f3, #ffffff);
-        --container-bg: #fff;
-        --text-color: #222;
-        --header-color: #00796b;
-        --question-bg: #f9f9f9;
-        --question-border: #ccc;
-        --unanswered-border: #d32f2f;
-        --unanswered-bg: #ffebee;
-        --option-bg: #eceff1;
-        --option-hover-bg: #cfd8dc;
-        --selected-bg: #b2dfdb;
-        --selected-border: #00796b;
-        --correct-bg: #c8e6c9;
-        --correct-border: #388e3c;
-        --correct-text: #1b5e20;
-        --wrong-bg: #ffcdd2;
-        --wrong-border: #d32f2f;
-        --wrong-text: #c62828;
-        --disabled-opacity: 0.7;
-        --shadow-color: rgba(0,0,0,0.1);
-        --primary-btn-bg: #00796b;
-        --secondary-btn-bg: #0d47a1;
-        --danger-btn-bg: #d32f2f;
-    }
-    body.dark-mode {
-        --bg-gradient: linear-gradient(to right, #232526, #414345);
-        --container-bg: #2c2c2e;
-        --text-color: #f0f0f0;
-        --header-color: #4db6ac;
-        --question-bg: #3a3a3c;
-        --question-border: #555;
-        --unanswered-border: #ef5350;
-        --unanswered-bg: #4e3434;
-        --option-bg: #4a4a4c;
-        --option-hover-bg: #5a5a5c;
-        --selected-bg: #00796b;
-        --selected-border: #4db6ac;
-        --correct-bg: #2e7d32;
-        --correct-border: #66bb6a;
-        --correct-text: #e8f5e9;
-        --wrong-bg: #c62828;
-        --wrong-border: #ef5350;
-        --wrong-text: #ffcdd2;
-        --shadow-color: rgba(255,255,255,0.1);
-        --primary-btn-bg: #26a69a;
-        --secondary-btn-bg: #42a5f5;
-        --danger-btn-bg: #ef5350;
-    }
-    html, body {
-      margin: 0; padding: 0; font-family: 'Cairo', sans-serif;
-      background: var(--bg-gradient); color: var(--text-color);
-      transition: background 0.3s, color 0.3s;
-    }
-    .top-controls {
-        position: fixed; top: 20px; left: 20px; z-index: 1000;
-    }
-    .theme-switch {
-        position: relative; display: inline-block; width: 60px; height: 34px;
-    }
-    .theme-switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-        position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-        background-color: #ccc; transition: .4s; border-radius: 34px;
-    }
-    .slider:before {
-        position: absolute; content: ""; height: 26px; width: 26px; left: 4px;
-        bottom: 4px; background-color: white; transition: .4s; border-radius: 50%;
-    }
-    input:checked + .slider { background-color: var(--primary-btn-bg); }
-    input:checked + .slider:before { transform: translateX(26px); }
-    .main-container {
-      max-width: 1000px; margin: 40px auto; background: var(--container-bg);
-      padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px var(--shadow-color);
-      transition: background 0.3s;
-    }
-    h1, h2, h3, p { margin: 0; padding: 0; }
-    h1 { text-align: center; color: var(--header-color); margin-bottom: 30px; }
-    #start-screen { text-align: center; }
-    #start-screen p { font-size: 1.2em; margin: 20px 0; }
-    .unit-selection { margin: 30px 0; }
-    .unit-selection button {
-        background: var(--option-bg); color: var(--text-color); border: 2px solid var(--question-border);
-        padding: 10px 15px; margin: 5px; border-radius: 8px; cursor: pointer; transition: all 0.3s;
-    }
-    .unit-selection button.selected { background: var(--selected-bg); border-color: var(--selected-border); }
-    #start-btn {
-        background: var(--primary-btn-bg); color: white; padding: 15px 40px; font-size: 1.4em;
-        border: none; border-radius: 12px; cursor: pointer;
-    }
-    #quiz-container { display: none; }
-    .question { margin-bottom: 25px; padding: 20px; border: 2px solid var(--question-border); border-radius: 12px; background: var(--question-bg); transition: all 0.3s ease; }
-    .question.unanswered { border-color: var(--unanswered-border); background-color: var(--unanswered-bg); }
-    .question h3 { margin-bottom: 15px; }
-    .answers label { display: block; padding: 10px 15px; margin-bottom: 8px; background: var(--option-bg); border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s ease; }
-    .answers label:hover { background: var(--option-hover-bg); }
-    .answers input[type="radio"] { display: none; }
-    .answers input[type="radio"]:checked + label { background: var(--selected-bg) !important; border-color: var(--selected-border); }
-    .correct { background: var(--correct-bg) !important; border-color: var(--correct-border) !important; color: var(--correct-text) !important; }
-    .wrong { background: var(--wrong-bg) !important; border-color: var(--wrong-border) !important; color: var(--wrong-text) !important; }
-    input[type="radio"]:disabled + label { cursor: not-allowed; opacity: var(--disabled-opacity); }
-    input[type="radio"]:disabled + label:hover { background: var(--option-bg) !important; }
-    .button-group { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
-    .button-group button { flex-grow: 1; padding: 15px; font-size: 1.1em; border: none; border-radius: 12px; cursor: pointer; transition: background 0.3s ease; font-family: 'Cairo', sans-serif; font-weight: bold; color: white; min-width: 150px; }
-    #submit-btn { background: var(--primary-btn-bg); }
-    #restart-btn, #smart-review-btn { background: var(--secondary-btn-bg); }
-    #share-btn, #print-btn { background: #607d8b; }
-    #final-result { margin: 30px 0 15px 0; padding: 20px; text-align: center; background-color: var(--option-bg); border-radius: 12px; display: none; }
-    #final-result h2 { margin: 0 0 10px 0; color: var(--header-color); }
-    #final-result p { margin: 10px 0; font-size: 1.2em; font-weight: bold; }
-    .stats-container { display: flex; height: 30px; border-radius: 8px; overflow: hidden; margin: 20px 0; background: var(--question-bg); }
-    .stats-bar { display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; transition: width 0.5s; font-size: 0.9em; }
-    .stats-bar.correct { background-color: var(--correct-border); }
-    .stats-bar.incorrect { background-color: var(--wrong-border); }
-    #credit { text-align: center; margin-top: 30px; padding-bottom: 20px; color: #777; }
-    body.dark-mode #credit { color: #aaa; }
-    @media print { body * { display: none; } #quiz-container, #quiz-container * { display: block; } .question { border: 1px solid #ccc; page-break-inside: avoid; } .print-only-answer { display: inline !important; font-weight: bold; margin-right: 10px; } }
-    .print-only-answer { display: none; }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f0e6">
+  <meta name="description" content="كنافة سكره — نموذج رقمي تجريبي للمنيو والطلب.">
+  <title>كنافة سكره | نموذج الموقع</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="top-controls">
-      <label class="theme-switch">
-        <input type="checkbox" id="theme-checkbox">
-        <span class="slider"></span>
-      </label>
-  </div>
-  
-  <div id="start-screen" class="main-container">
-      <h1>مراجعة أحياء</h1>
-      <p>مراجعة لأهم أسئلة الأحياء، 71 سؤال من ملف التحصيلي لمساعدتك في الاستعداد للاختبار.</p>
-      <div class="unit-selection">
-          <h3>اختر عدد الأسئلة:</h3>
-          <button class="unit-btn selected" data-mode="all">مراجعة كل الأسئلة (71)</button>
-          <button class="unit-btn" data-mode="50">مراجعة 50 سؤال</button>
-          <button class="unit-btn" data-mode="25">مراجعة 25 سؤال</button>
+  <div class="notice"><span class="dot"></span><b id="statusText">مغلق الآن</b><span id="statusHelp">يمكنك تجهيز طلبك المسبق.</span></div>
+
+  <header class="header">
+    <a class="brand" href="#top"><span class="mark">س</span><span><b>كنافة سكره</b><small>جدة</small></span></a>
+    <nav><a href="#menu">المنيو</a><a href="#story">حكايتنا</a><a href="#visit">زورونا</a></nav>
+    <div class="head-actions"><a class="order-link" href="#menu">اطلب الآن ←</a><button class="bag" id="openCart" aria-label="فتح السلة">▢<em id="bagCount">0</em></button></div>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap">
+      <div class="hero-copy">
+        <div class="kicker">✦ حلا جدة بنكهة سكره</div>
+        <h1>كنافة <span>تدخل مزاجك</span> قبل أول لقمة.</h1>
+        <p>كنافة وحلويات ومذاقات تحلي لحظتك.</p>
+        <div class="hero-actions"><a class="primary" href="#menu">ابدأ طلبك ←</a><a class="quiet" href="#visit">الموقع والمواعيد ‹</a></div>
+        <div class="meta"><div><small>الموقع</small><b>جدة</b></div><div><small>ساعات العمل</small><b>2 م — 2 ص</b></div></div>
       </div>
-      <button id="start-btn">ابدأ الآن</button>
-  </div>
-
-  <div id="quiz-container" class="main-container" style="display: none;">
-    <div id="final-result">
-      <h2 id="score-display"></h2>
-      <div class="stats-container">
-          <div id="correct-bar" class="stats-bar correct"></div>
-          <div id="incorrect-bar" class="stats-bar incorrect"></div>
+      <div class="hero-visual">
+        <img src="https://images.unsplash.com/photo-1761828122856-8703baac8e86?w=1400&q=88&auto=format&fit=crop" alt="حلا شرقي بالفستق">
+        <div class="stamp"><strong>سكره</strong><span>الحلا كما تحبه</span></div>
+        <div class="hero-note"><b>01</b><span>ابدأ بالأكثر طلبًا، ثم خذ وقتك مع بقية المنيو.</span></div>
       </div>
-      <p id="evaluation"></p>
-    </div>
-    <form id="quizForm"></form>
-    <div class="button-group">
-      <button id="submit-btn">عرض النتيجة</button>
-      <button id="smart-review-btn" style="display: none;">أعد حل الأسئلة الخطأ فقط</button>
-      <button id="restart-btn" style="display: none;">إعادة الاختبار</button>
-      <button id="share-btn" style="display: none;">🔗 مشاركة النتيجة</button>
-      <button id="print-btn" style="display: none;">🖨️ طباعة</button>
-    </div>
-  </div>
+    </section>
 
-  <p id="credit">أنشئ هذه المراجعة الطالب : مهند محمد الحزمي , الصف : 2/5</p>
+    <section class="featured wrap">
+      <div class="section-title"><div><small>البداية السهلة</small><h2>الأكثر طلبًا الآن.</h2></div><a href="#menu">كل المنيو ‹</a></div>
+      <div id="featuredGrid" class="featured-grid"></div>
+    </section>
 
-  <script>
-    const allQuestions = [
-        { q: "أي التراكيب الآتية تتوقع أن تجد فيها الجدار الخلوي؟", o: ["خلية من شجر بلوط", "خلية دم من قطة", "خلية كبد من فار", "خلية من جلد الانسان"], a: 0 },
-        { q: "ما الوضع الذي يزيد من سيولة طبقة الدهون المفسفرة المزدوجة؟", o: ["انخفاض درجة الحرارة", "زيادة عدد جزيئات الكولسترول", "زيادة عدد الاحماض الدهنية", "زيادة عدد البروتينات"], a: 1 },
-        { q: "أين تنتج الرايبوسومات؟", o: ["المادة الكروماتيية", "الثقب النووي", "النوية", "الشبكة الاندوبلازمية"], a: 2 },
-        { q: "ما المادة التي لا تعد جزءا من النيوكليوتيدات؟", o: ["السكر", "الفوسفات", "الماء", "القاعدة النيتروجينية"], a: 2 },
-        { q: "ما الذي يسهم في النفاذية الاختيارية للغشاء الخلوي؟", o: ["الايونات", "البروتينات", "الأملاح المعدنية", "الكربوهيدرات"], a: 1 },
-        { q: "المسؤول عن انتاج الطاقة في الخلية:", o: ["الميتوكندريا", "الفجوات", "جهاز جولجي", "النوية"], a: 0 },
-        { q: "الصفة المشتركة بين اجسام جولجي والرايبوسومات والشبكة الاندوبلازمية الخشنة في الخلية ؟", o: ["تخزين الطاقة", "انتاج البروتين", "انتاج الهرمونات", "اخراج الفضلات"], a: 1 },
-        { q: "أي المخلوقات الحية الآتية تعتمد على مصادر خارجية للمركبات العضوية؟", o: ["الذاتية التغذي الضوئية", "الذاتية التغذي", "غير الذاتية التغذي", "الذاتية التغذي الكيميائية"], a: 2 },
-        { q: "ما العملية التي لا تحدث في الميتوكندريا:", o: ["عمليات التنفس الهوائية", "التحلل السكري", "حلقة كربس", "سلسلة نقل الالكترون"], a: 1 },
-        { q: "أي تحولات الطاقة الآتية يحدث في المخلوقات الحية الذاتية التغذي فقط؟", o: ["من الطاقة الضوئية إلى الطاقة الكيميائية", "من الطاقة الكيميائية إلى الطاقة الميكانيكية", "من الطاقة الميكانيكية إلى الطاقة الحرارية", "من الطاقة الميكانيكية إلى الطاقة الكيميائية"], a: 0 },
-        { q: "ما الذي تخزنه الخلايا وتطلقه بوصفه مصدراً رئيساً للطاقة الكيميائية:", o: ["ATP", "NADPH", "ADPi", "APT"], a: 0 },
-        { q: "أي مما يأتي لا يعد من مراحل التنفس الخلوي؟", o: ["التحلل السكري", "سلسلة نقل الإلكترون", "حلقة كربس", "تخمر حمض اللاكتيك"], a: 3 },
-        { q: "اغشية مسطحة داخل البلاستيدات الخضراء تحوي الاصباغ تحدث فيها التفاعلات الضوئية:", o: ["الغرانا", "الحشوة", "الاصباغ", "الثايلا كويدات"], a: 3 },
-        { q: "أي العضيات لا يوجد في الخلايا الحيوانية ؟", o: ["النواة", "الميتوكندريا", "البلاستيدات", "الشبكة الاندوبلازمية"], a: 2 },
-        { q: "في عملية البناء الضوئي تتحول الطاقة من :", o: ["كيميائية الى ميكانيكية", "كهربائية الى ميكانيكية", "ضوئية الى كيميائية", "ميكانيكية الى كهربائية"], a: 2 },
-        { q: "احد المركبات التالية ينتج من عملية البناء الضوئي :", o: ["سكر الجلوكوز", "البروتين", "الدهون", "الحمض الاميني"], a: 0 },
-        { q: "عند حدوث عطل في الميتوكندريا تتعطل عملية :", o: ["الإخراج", "البناء الضوئي", "التنفس اللاهوائي", "التنفس الهوائي"], a: 3 },
-        { q: "أي المخلوقات الحية التالية لا تحوي خلاياه جداراً خلوياً ؟", o: ["الرمان", "الهيدرا", "التمر", "المشروم"], a: 1 },
-        { q: "أي العضيات التالية محاط بغشاء ويوفر الطاقة للخلية ؟", o: ["الرايبوسومات", "الاجسام محللة", "الميتوكندريا", "النواة"], a: 2 },
-        { q: "عدد مجموعات الفوسفات اثنتان في :", o: ["ATP", "ADP", "AMP", "ANP"], a: 1 },
-        { q: "الاجسام المحللة يمكن ان نجدها في :", o: ["خلية بكتيرية", "خلية فيروسية", "ساق نبات", "جلد ارنب"], a: 3 },
-        { q: "تكمن أهمية صغر حجم الخلية في :", o: ["الحفاظ على بقائها", "بطء انقسامها", "سهولة حركتها", "صعوبة اخراج الفضلات"], a: 0 },
-        { q: "أي مما يأتي يصف نشاطات الخلية التي تضم النمو الخلوي وانقسام الخلية ؟", o: ["السيتوبلازم", "الكروماتين", "دورة الخلية", "الانقسام المتساوي"], a: 2 },
-        { q: "ما دور البروتينات الحلقية في الخلية ؟", o: ["تحفز تحلل الغلاف النووي", "تعطي الإشارة لبدء انقسام الخلية", "تسبب اختفاء النوية", "تنظم حركة الأنيبيبات الدقيقة"], a: 1 },
-        { q: "ما المواد التي تشكل مجموعة الإنزيم - البروتين الحلقي /CDK - والتي تتحكم في مراحل دورة الخلية ؟", o: ["الدهون والبروتينات", "الدهون والإنزيمات", "البروتينات والإنزيمات", "الكربوهيدرات والبروتينات"], a: 2 },
-        { q: "أي مما يأتي من خصائص الخلايا السرطانية ؟", o: ["البروتين الحلقي فيها يقوم بوظائفه", "انقسام خلوي منظم", "تحوي تغيرات عديدة في المادة الوراثية", "لا يحدث لها انقسام السيتوبلازم"], a: 2 },
-        { q: "العملية التي ينتج عنها تساقط أوراق الأشجار في فصل الخريف هي:", o: ["التغير في المادة الوراثية", "انقسام السيتوبلازم", "موت الخلية المبرمج", "انفصال الخلايا الجذعية"], a: 2 },
-        { q: "أي مما يأتي يعد أكثر الأسباب احتمالاً لسرطان الرئة ؟", o: ["التعرض للأشعة تحت الحمراء", "التعرض للأبواغ الفطرية", "التعرض لجزيئات الاسبست", "التعرض للأشعة فوق البنفسجية"], a: 2 },
-        { q: "أي الخلايا التالية تنهي دورتها عند المرحلة الفرعية الأولى من الطور البيني ولا تنقسم مرة اخرى", o: ["خلايا الجلد", "خلايا العظم", "خلايا المخ", "خلايا المعدة"], a: 2 },
-        { q: "أي الخلايا التالية يحدث لها انقسام منصف ؟", o: ["خلية مبيض", "خلية جلد", "خلية معدة", "خلية كبد"], a: 0 },
-        { q: "المرحلة التي تستعد فيها الخلية لانقسام نواتها :", o: ["G1", "G2", "مرحلة بناء DNA", "مرحلة بناء البروتين"], a: 1 },
-        { q: "في الانقسام المتساوي يتكون ما يسمى بالصفيحة الخلوية, هذه العملية تحدث في الخلايا :", o: ["النباتية", "البكتيرية", "البدائية", "الحيوانية"], a: 0 },
-        { q: "في الانقسام المتساوي يتكون ما يسمى بالتخصر, هذه العملية تحدث في الخلايا :", o: ["النباتية", "البكتيرية", "البدائية", "الحيوانية"], a: 3 },
-        { q: "ماذا يحدث لو فشل نظام نقاط السيطرة في الخلية ؟", o: ["نمو الخلية بشكل طبيعي", "موت الخلية مباشرة", "بطء نمو الخلية", "نمو الخلية بشكل غير منتظم"], a: 3 },
-        { q: "في أي المراحل التالية يحدث التصالب والعبور الجيني ؟", o: ["الطور الانفصالي", "الطور التمهيدي الاول", "الطور الاستوائي", "الطور التمهيدي الثاني"], a: 1 },
-        { q: "أي مراحل الانقسام المنصف يمثلها الشكل (أزواج الكروموسومات في المنتصف)؟", o: ["الطور الاستوائي الأول", "الطور الاستوائي الثاني", "الطور التمهيدي", "الطور الانفصالي"], a: 0 },
-        { q: "العمليات التالية تزيد من التنوع الوراثي عدا :", o: ["العبور الجيني", "الانقسام المتساوي", "التزاوج العشوائي", "الانقسام المنصف"], a: 1 },
-        { q: "الانقسام المنصف يحدث في :", o: ["الجلد", "الكبد", "المبيض", "الخلايا السرطانية"], a: 2 },
-        { q: "أي مما يأتي لا يُسهم في التنوع الوراثي؟", o: ["عدد الكروموسومات", "التزاوج العشوائي", "العبور الجيني", "الانقسام المنصف"], a: 0 },
-        { q: "أي الاختلالات الآتية يعد اختلالا وراثيا سائدًا ؟", o: ["المهاق", "التليف الكيسي", "مرض هنتنجتون", "تاي ساكس"], a: 2 },
-        { q: "أي مما يأتي لا يعد من خصائص الشخص المصاب بالتليف الكيسي؟", o: ["فقدان صبغة الجلد", "مشكلات هضمية", "التهاب متكرر في الرئتين", "اختلال في قنوات ايون الكلور"], a: 0 },
-        { q: "ما الذي يحدد الجنس في الانسان ؟", o: ["التفوق الجيني", "الكروموسوم رقم 21", "الكروموسومان X و Y", "السيادة المشتركة"], a: 2 },
-        { q: "أي الجمل الآتية غير صحيحة فيما يخص القطع الطرفية؟", o: ["لها دور في الهرم والشيخوخة", "توجد في نهايات الكروموسومات", "تحمي الكروموسومات", "تتكون من DNA و سكريات"], a: 3 },
-        { q: "ما الطراز الكروموسومي لشخص مصاب بمتلازمة كلينفلتر ؟", o: ["XXXY", "OY", "XYY", "XXY"], a: 0 },
-        { q: "ما وحدات البناء الأساسية لكل من DNA و RNA ؟", o: ["الفوسفور", "البيوربينات", "الرايبوز", "النيوكليوتيدات"], a: 3 },
-        { q: "بم يبدا بناء سلسلة DNA الجديد ؟", o: ["الناقل RNA", "بادئ RNA", "الرسول RNA", "وحدة نيوكلوتيد"], a: 1 },
-        { q: "أي مما يأتي لا يعد نوعا من الطفرات ؟", o: ["استبدال القاعدة", "الإضافة", "RNA تداخل", "الانتقال"], a: 2 },
-        { q: "يعمل عمل كودون البدء :", o: ["CAU", "UAA", "CUA", "AUG"], a: 3 },
-        { q: "ما كود الانتهاء في mRNA ؟", o: ["AAG", "UAA", "AUG", "CUA"], a: 1 },
-        { q: "قطعة من DNA تحمل التسلسل : CCCCGAATT افترض ان طفرة حدثت فاصبح التسلسل : CCTCGAATT ما المصطلح الذي يصف هذه الطفرة ؟", o: ["طفرة حذف", "طفرة تضاعف", "طفرة استبدال", "طفرة كروموسومية"], a: 2 },
-        { q: "معالجة DNA بإضافة DNA لمخلوق اخر يعد :", o: ["التفوق الجيني", "هندسة وراثية", "طفرة", "انزيم"], a: 1 },
-        { q: "تعدد المجموعة الكروموسومية في نبات القمح يؤدي الى :", o: ["موته", "قلة حيويته وصلابته", "عدم تاثره", "ازدیاد حيويته وصلابته"], a: 3 },
-        { q: "لذبابة المنزل 6 ازواج من الكروموسومات ما عدد التراكيب الجينية المحتملة له ؟", o: ["48", "58", "64", "120"], a: 2 },
-        { q: "عند تزاوج بازلاء خضراء yy مع بازلاء صفراء YY ينتج الجيل الأول :", o: ["Yy", "yy", "YY", "YYy"], a: 0 },
-        { q: "الجينان AB لفصائل الدم مثال على :", o: ["السيادة المشتركة", "السيادة التامة", "السيادة المندلية", "السيادة غير التامة"], a: 0 },
-        { q: "اذا كان عدد الكروموسومات في الخلايا الجنسية للإنسان 23 كروموسوماً فما عدد كروموسومات الجلد ؟", o: ["23", "33", "44", "46"], a: 3 },
-        { q: "في الانسان من الصفات المتأثرة بالجنس صفة ؟", o: ["الصلع", "عمى الألوان", "الهيموفيليا", "لون الجلد"], a: 0 },
-        { q: "ما القواعد النيتروجينية المتممة للسلسلة : 5' ATGGGCGC 3' :", o: ["3' TACCCGCG 5'", "5' TACCCGCG 3'", "3' ATGGGCGC 5'", "5' TACCCGCG 3'"], a: 1 },
-        { q: "ما عدد كل من الذكور والاناث المصابين في مخطط السلالة ؟", o: ["1 انثى / 1 ذكر", "2 انثى / 1 ذكر", "2 ذكر / 1 انثى", "لا احد"], a: 1 },
-        { q: "ما الاختلال الذي يظهر في الصورة (ثلاث نسخ من كروموسوم 21) ؟", o: ["مرض هنتجتون", "متلازمة كلينفلتر", "متلازمة داون", "متلازمة تيرنر"], a: 2 },
-        { q: "اول من اكتشف DNA بوصفة مادة وراثية :", o: ["جريفيث", "تشارجاف", "افري", "هيرشي"], a: 0 },
-        { q: "أي التالي يمثل شخص طرازه الجيني XYY ؟", o: ["شخص طبيعي الى حد كبير", "انثى طبيعية", "شخص مصاب بمتلازمة كلينفلتر", "شخص مصاب بمتلازمة داون"], a: 0 },
-        { q: "أي الطرز الجينية يسبب الوفاة ؟", o: ["OY", "XXYY", "YYX", "XO"], a: 0 },
-        { q: "عند تزاوج ارنب اسود BB مع ارنب ابيض bb ينتج الجيل الأول :", o: ["Bb", "BB", "bb", "Bbb"], a: 0 },
-        { q: "أي التالي يعد طراز جيني لصفتين متنحيتين ؟", o: ["ssrr", "SSRR", "SSRr", "ttgg"], a: 0 },
-        { q: "الطراز الكروموسومي لشخص مصاب بمتلازمة تيرنر هو :", o: ["XXYY", "YYX", "ΟΥ", "XO"], a: 3 },
-        { q: "تكمن أهمية العبور الجيني في انه يؤدي الى :", o: ["زيادة عدد الامشاج", "التنوع الوراثي", "المحافظة على الثبات", "انتاج كمية من الامشاج"], a: 1 },
-        { q: "في الانسان يؤثر مرض هنتنجتون في الجهاز :", o: ["البولي", "الهضمي", "العصبي", "الدوري"], a: 2 },
-    ];
-    
-    // --- DOM ELEMENT REFERENCES ---
-    const elements = {
-        themeCheckbox: document.getElementById('theme-checkbox'),
-        startScreen: document.getElementById('start-screen'),
-        quizContainer: document.getElementById('quiz-container'),
-        startBtn: document.getElementById('start-btn'),
-        modeBtns: document.querySelectorAll('.unit-btn'),
-        form: document.getElementById('quizForm'),
-        submitBtn: document.getElementById('submit-btn'),
-        restartBtn: document.getElementById('restart-btn'),
-        smartReviewBtn: document.getElementById('smart-review-btn'),
-        shareBtn: document.getElementById('share-btn'),
-        printBtn: document.getElementById('print-btn'),
-        resultDiv: document.getElementById('final-result'),
-        scoreDisplay: document.getElementById('score-display'),
-        evaluationDisplay: document.getElementById('evaluation'),
-        correctBar: document.getElementById('correct-bar'),
-        incorrectBar: document.getElementById('incorrect-bar'),
-    };
+    <section id="menu" class="menu-section">
+      <div class="wrap menu-head"><div><small>منيو سكره</small><h2>اختر على مزاجك.</h2></div><p>الصور الحالية توضيحية مؤقتة وقريبة من الأصناف إلى حين استبدالها بالتصوير الرسمي للعلامة.</p></div>
+      <div class="tabs-wrap"><div class="wrap tabs" id="tabs"></div></div>
+      <div class="wrap" id="menuGroups"></div>
+    </section>
 
-    // --- STATE MANAGEMENT ---
-    let currentQuestions = [];
-    let incorrectQuestions = [];
-    let currentMode = 'all';
+    <section id="story" class="story">
+      <div class="wrap story-grid"><div><small>فلسفة سكره</small><h2>الحلا مو زيادة.<br>الحلا هو اللحظة.</h2><p>نبحث عن قرمشة تسمعها، حشوة تحسها، وطعم واضح ما يضيع وسط الإضافات.</p></div><div class="story-photo"><img src="https://images.unsplash.com/photo-1778447830669-8fe9626ed738?w=1200&q=86&auto=format&fit=crop" alt="حلا بالفستق"><span>SUKARAH</span></div></div>
+    </section>
 
-    // --- THEME ---
-    elements.themeCheckbox.addEventListener('change', () => {
-        document.body.classList.toggle('dark-mode', elements.themeCheckbox.checked);
-        localStorage.setItem('theme', elements.themeCheckbox.checked ? 'dark' : 'light');
-    });
+    <section id="visit" class="visit wrap">
+      <div class="visit-card"><div><small>زورونا</small><h2>جدة</h2><p>افتح الموقع أو تواصل مباشرة، ويمكنك تجهيز الطلب قبل الوصول.</p><div class="visit-status"><span class="dot"></span><b id="visitStatus">مغلق الآن</b><span>• يوميًا من 2 م إلى 2 ص</span></div></div><div class="visit-links"><a href="https://maps.google.com/?q=Jeddah" target="_blank"><span>⌖</span><div><small>الموقع</small><b>افتح الخريطة</b></div><i>‹</i></a><a href="tel:+966570207432"><span>☎</span><div><small>اتصال</small><b>تواصل معنا</b></div><i>‹</i></a><a href="https://wa.me/966570207432" target="_blank"><span>◌</span><div><small>واتساب</small><b>استفسار سريع</b></div><i>‹</i></a></div></div>
+    </section>
+  </main>
 
-    if (localStorage.getItem('theme') === 'dark') {
-        elements.themeCheckbox.checked = true;
-        document.body.classList.add('dark-mode');
-    }
+  <footer><div class="wrap footer-inner"><a class="brand" href="#top"><span class="mark">س</span><span><b>كنافة سكره</b><small>كنافة وحلويات ومذاقات تحلي لحظتك.</small></span></a><div>نموذج تجريبي — الصور وبيانات الموقع مؤقتة لحين اعتماد النسخة الرسمية.</div></div></footer>
 
-    // --- QUIZ LOGIC ---
-    function buildQuiz(questionSet) {
-        currentQuestions = [...questionSet]; // No shuffle here, shuffle happens when picking the set
-        elements.form.innerHTML = '';
-        currentQuestions.forEach((q, i) => {
-            const qDiv = document.createElement("div");
-            qDiv.className = "question";
-            qDiv.id = `q-container-${i}`;
-            qDiv.innerHTML = `<h3>س${i + 1}: ${q.q}</h3>`;
-            const ansDiv = document.createElement("div");
-            ansDiv.className = "answers";
-            q.o.forEach((opt, j) => {
-                const id = `q${i}_opt${j}`;
-                const input = document.createElement("input");
-                input.type = 'radio';
-                input.name = `q${i}`;
-                input.id = id;
-                input.value = j; // Use index as value for robust checking
-                ansDiv.appendChild(input);
-                const label = document.createElement("label");
-                label.htmlFor = id;
-                label.textContent = opt;
-                if (j === q.a) {
-                    label.innerHTML += `<span class="print-only-answer">(الإجابة الصحيحة)</span>`;
-                }
-                ansDiv.appendChild(label);
-            });
-            qDiv.appendChild(ansDiv);
-            elements.form.appendChild(qDiv);
-        });
-    }
+  <button id="mobileCart" class="mobile-cart"><em id="mobileCount">0</em><span>عرض الطلب</span><b id="mobileTotal">0 ر.س</b></button>
 
-    // --- EVENT LISTENERS ---
-    elements.modeBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            elements.modeBtns.forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            currentMode = btn.dataset.mode;
-        });
-    });
+  <div class="layer" id="productLayer" aria-hidden="true"><button class="backdrop" data-close="product"></button><div class="product-modal"><button class="close" data-close="product">×</button><img id="modalImage" alt=""><div class="modal-body"><small id="modalCategory"></small><div class="modal-title"><h2 id="modalName"></h2><b id="modalPrice"></b></div><p id="modalDesc"></p><label>ملاحظة للمطبخ <span>اختياري</span></label><textarea id="modalNote" maxlength="120" placeholder="مثال: بدون مكسرات"></textarea><div class="qty"><span>الكمية</span><div><button id="minusQty">−</button><b id="qtyValue">1</b><button id="plusQty">+</button></div></div></div><div class="modal-foot"><button id="addProduct" class="primary"><span>أضف للطلب</span><b id="addTotal"></b></button></div></div></div>
 
-    elements.startBtn.addEventListener('click', () => {
-        elements.startScreen.style.display = 'none';
-        elements.quizContainer.style.display = 'block';
-        
-        let questionsToLoad = [];
-        const shuffledAll = [...allQuestions].sort(() => Math.random() - 0.5);
+  <div class="layer" id="cartLayer" aria-hidden="true"><button class="backdrop" data-close="cart"></button><aside class="cart"><div class="cart-head"><div><small>مراجعة أخيرة</small><h2>طلبك</h2></div><button class="close" data-close="cart">×</button></div><div id="cartItems" class="cart-items"></div><div class="cart-foot" id="cartFoot"><div class="total"><span>الإجمالي</span><b id="cartTotal"></b></div><p>سيتم فتح واتساب برسالة مرتبة بالمنتجات والإجمالي، ثم يؤكد المطعم التوفر وطريقة الاستلام أو التوصيل.</p><button id="checkout" class="whatsapp">◌ إرسال الطلب عبر واتساب</button></div></aside></div>
 
-        if (currentMode === 'all') {
-            questionsToLoad = shuffledAll;
-        } else {
-            const limit = parseInt(currentMode, 10);
-            questionsToLoad = shuffledAll.slice(0, limit);
-        }
-        buildQuiz(questionsToLoad);
-    });
-
-    elements.submitBtn.addEventListener('click', () => {
-        document.querySelectorAll('.question.unanswered').forEach(el => el.classList.remove('unanswered'));
-        if (elements.form.querySelectorAll('input[type="radio"]:checked').length < currentQuestions.length) {
-            let firstUnanswered = null;
-            currentQuestions.forEach((q, i) => {
-                if (!elements.form.querySelector(`input[name='q${i}']:checked`)) {
-                    const block = document.getElementById(`q-container-${i}`);
-                    block.classList.add('unanswered');
-                    if (!firstUnanswered) firstUnanswered = block;
-                }
-            });
-            alert("الرجاء الإجابة على جميع الأسئلة الملونة بالأحمر.");
-            if (firstUnanswered) firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            return;
-        }
-
-        let score = 0;
-        incorrectQuestions = [];
-        currentQuestions.forEach((q, i) => {
-            const allRadios = elements.form.querySelectorAll(`input[name='q${i}']`);
-            const correctRadio = allRadios[q.a];
-            correctRadio.nextElementSibling.classList.add("correct");
-
-            const selectedRadio = elements.form.querySelector(`input[name='q${i}']:checked`);
-            if (parseInt(selectedRadio.value) === q.a) {
-                score++;
-            } else {
-                selectedRadio.nextElementSibling.classList.add("wrong");
-                incorrectQuestions.push(q);
-            }
-            allRadios.forEach(radio => radio.disabled = true);
-        });
-
-        let evaluationText = '';
-        if (score === currentQuestions.length) evaluationText = "ما شاء الله، بطل الأحياء!";
-        else if (score >= currentQuestions.length * 0.7) evaluationText = "أداء ممتاز";
-        else if (score >= currentQuestions.length * 0.5) evaluationText = "مستواك جيد";
-        else evaluationText = "تحتاج مراجعة أكثر";
-        
-        elements.scoreDisplay.innerText = `النتيجة: ${score} / ${currentQuestions.length}`;
-        elements.evaluationDisplay.innerText = `تقييم عام: ${evaluationText}`;
-        const percentCorrect = (score / currentQuestions.length) * 100;
-        elements.correctBar.style.width = `${percentCorrect}%`;
-        elements.correctBar.textContent = `${Math.round(percentCorrect)}%`;
-        const incorrectCount = currentQuestions.length - score;
-        elements.incorrectBar.style.width = `${100 - percentCorrect}%`;
-        if (incorrectCount > 0) elements.incorrectBar.textContent = `${incorrectCount}`;
-        
-        elements.resultDiv.style.display = 'block';
-        elements.submitBtn.style.display = 'none';
-        elements.restartBtn.style.display = 'inline-block';
-        elements.shareBtn.style.display = 'inline-block';
-        elements.printBtn.style.display = 'inline-block';
-        if (incorrectQuestions.length > 0) elements.smartReviewBtn.style.display = 'inline-block';
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    elements.restartBtn.addEventListener('click', () => location.reload());
-    
-    elements.smartReviewBtn.addEventListener('click', () => {
-        elements.resultDiv.style.display = 'none';
-        elements.submitBtn.style.display = 'inline-block';
-        elements.restartBtn.style.display = 'none';
-        elements.smartReviewBtn.style.display = 'none';
-        elements.shareBtn.style.display = 'none';
-        elements.printBtn.style.display = 'none';
-        buildQuiz(incorrectQuestions);
-    });
-
-    elements.shareBtn.addEventListener('click', () => {
-        const score = currentQuestions.length - incorrectQuestions.length;
-        const textToShare = `أنا جبت ${score}/${currentQuestions.length} في مراجعة أحياء 3، جربوا أنتم!`;
-        navigator.clipboard.writeText(textToShare).then(() => {
-            elements.shareBtn.textContent = '✅ تم النسخ!';
-            setTimeout(() => { elements.shareBtn.textContent = '🔗 مشاركة النتيجة'; }, 2000);
-        });
-    });
-
-    elements.printBtn.addEventListener('click', () => window.print());
-
-  </script>
+  <div id="toast" class="toast">✓ أضفنا اختيارك إلى السلة</div>
+  <script src="app.js"></script>
 </body>
 </html>
