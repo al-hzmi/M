@@ -4,10 +4,10 @@ import zlib from 'node:zlib';
 
 const base = 'https://raw.githubusercontent.com/al-hzmi/M/meem-market-storefront';
 const parts = await Promise.all(
-  [1, 2, 3, 4].map(async (part) => {
-    const response = await fetch(`${base}/meem-market-source.part${part}.b64`);
+  [1, 2, 3, 4, 5, 6].map(async (part) => {
+    const response = await fetch(`${base}/meem-market-v2.part${part}.b64`);
     if (!response.ok) {
-      throw new Error(`Unable to download source part ${part}: ${response.status}`);
+      throw new Error(`Unable to download Meem Market v2 source part ${part}: ${response.status}`);
     }
     return (await response.text()).trim();
   }),
@@ -24,4 +24,4 @@ for (const [relativePath, content] of Object.entries(files)) {
   fs.writeFileSync(target, content, 'utf8');
 }
 
-console.log(`Prepared ${Object.keys(files).length} Meem Market source files.`);
+console.log(`Prepared ${Object.keys(files).length} Meem Market DELTA-theme source files.`);
