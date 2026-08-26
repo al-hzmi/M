@@ -1,0 +1,65 @@
+name: Deploy Meem Market
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - meem-market-storefront
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rebuild storefront
+        shell: bash
+        run: |
+          mkdir -p dist
+          cat meem-static/chunk1.b64 meem-static/chunk2.b64 meem-static/chunk3.b64 meem-static/chunk4.b64 meem-static/chunk5.b64 meem-static/chunk6.b64 meem-static/chunk7.b64 | tr -d '\n\r ' > /tmp/meem.b64
+          python3 - <<'PY'
+          import base64, gzip, pathlib
+          payload = pathlib.Path('/tmp/meem.b64').read_text().strip()
+          raw = base64.b64decode(payload)
+          html = gzip.decompress(raw).decode('utf-8')
+          if '<title>سوق ميم' not in html:
+              raise SystemExit('Invalid storefront payload')
+          base = '/M'
+          html = html.replace("function go(path){history.pushState({},'',path);", "const BASE='/M';function go(path){history.pushState({},'',BASE+path);")
+          html = html.replace("function render(){const p=location.pathname;", "function render(){const p=(location.pathname.startsWith(BASE)?location.pathname.slice(BASE.length):location.pathname)||'/';")
+          out = pathlib.Path('dist/index.html')
+          out.write_text(html, encoding='utf-8')
+          pathlib.Path('dist/404.html').write_text(html, encoding='utf-8')
+          print('Built storefront:', len(html), 'bytes')
+          PY
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
