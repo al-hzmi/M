@@ -18,28 +18,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout storefront branch
+      - name: Checkout current storefront
         uses: actions/checkout@v4
-        with:
-          ref: meem-market-storefront
 
       - name: Build direct storefront
         shell: bash
         run: |
           mkdir -p dist
-          cat meem-static/chunk1.b64 meem-static/chunk2.b64 meem-static/chunk3.b64 meem-static/chunk4.b64 meem-static/chunk5.b64 meem-static/chunk6.b64 meem-static/chunk7.b64 | tr -d '\n\r ' > /tmp/meem.b64
-          python3 - <<'PY'
-          import base64, gzip, pathlib
-          payload = pathlib.Path('/tmp/meem.b64').read_text().strip()
-          html = gzip.decompress(base64.b64decode(payload)).decode('utf-8')
-          if '<title>سوق ميم' not in html:
-              raise SystemExit('Invalid storefront payload')
-          html = html.replace("function go(path){history.pushState({},'',path);", "const BASE='/M';function go(path){history.pushState({},'',BASE+path);")
-          html = html.replace("function render(){const p=location.pathname;", "function render(){const p=(location.pathname.startsWith(BASE)?location.pathname.slice(BASE.length):location.pathname)||'/';")
-          pathlib.Path('dist/index.html').write_text(html, encoding='utf-8')
-          pathlib.Path('dist/404.html').write_text(html, encoding='utf-8')
-          print('Storefront bytes:', len(html))
-          PY
+          cp index.html 404.html meem-style.css catalog.js meem-app.js meem-logo.svg .nojekyll dist/
+          test -s dist/index.html
+          test -s dist/meem-app.js
+          test -s dist/catalog.js
+          grep -q "سوق ميم" dist/index.html
+          grep -q "الأقسام الرئيسية" dist/meem-app.js
+          echo "Direct storefront artifact prepared"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
